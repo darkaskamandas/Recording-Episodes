@@ -1,0 +1,148 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+class Solution
+{
+    static void Main(String[] args)
+    {
+        new RecordingEpisodes().Solve();
+    }
+}
+
+class RecordingEpisodes
+{
+	public void Solve()
+	{
+		var xx = Console.In.ReadToEnd()
+			.Split(new char[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+			.Select(_s => int.Parse(_s)).ToArray();
+		var ll = 100;
+		aa = new int[ll];
+		ab = new int[ll];
+		ba = new int[ll];
+		bb = new int[ll];
+		uu = new int[ll];
+		tt = new int[ll];
+		for (var i = 1; i < xx.Length; )
+		{
+			nn = xx[i++];
+			for (var e = 0; e < nn; ++e)
+			{
+				aa[e] = xx[i++];
+				ab[e] = xx[i++];
+				ba[e] = xx[i++];
+				bb[e] = xx[i++];
+			}
+			SolveSeason();
+		}
+	}
+
+	void SolveSeason()
+	{
+		var ll = 0;
+		var rr = 0;
+		for (int l = 0, r = 0; r < nn; )
+		{
+			if (IsSat(l, r))
+			{
+				if (rr - ll < r - l)
+				{
+					ll = l;
+					rr = r;
+				}
+				++r;
+			}
+			else
+			{
+				++l;
+			}
+		}
+		Console.WriteLine(++ll + " " + ++rr);
+	}
+
+	bool IsSat(int l, int r)
+	{
+		for (var e = l; e <= r; ++e)
+		{
+			uu[e] = 0;
+		}
+		for (var e = l; e <= r; ++e)
+		{
+			if (uu[e] == 0 && !Prop(l, r, e, 1) && !Prop(l, r, e, -1))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool Prop(int l, int r, int e, int u)
+	{
+		var te = 1;
+		uu[e] = u;
+		tt[0] = e;
+		for (var ti = 0; ti < te; ++ti)
+		{
+			e = tt[ti];
+			u = uu[e];
+			int a;
+			int b;
+			if (u == 1)
+			{
+				a = aa[e];
+				b = ab[e];
+			}
+			else
+			{
+				a = ba[e];
+				b = bb[e];
+			}
+
+			for (var re = l; re <= r; ++re)
+			{
+				if (e != re)
+				{
+					if ((a <= aa[re] && aa[re] <= b) || (a <= ab[re] && ab[re] <= b) || (aa[re] <= a && a <= ab[re]))
+					{
+						var ru = 1;
+						if (uu[re] == ru)
+						{
+							for (; te > 0; uu[tt[--te]] = 0) ;
+							return false;
+						}
+						if (uu[re] == 0)
+						{
+							uu[re] = -ru;
+							tt[te++] = re;
+						}
+					}
+					if ((a <= ba[re] && ba[re] <= b) || (a <= bb[re] && bb[re] <= b) || (ba[re] <= a && a <= bb[re]))
+					{
+						var ru = -1;
+						if (uu[re] == ru)
+						{
+							for (; te > 0; uu[tt[--te]] = 0) ;
+							return false;
+						}
+						if (uu[re] == 0)
+						{
+							uu[re] = -ru;
+							tt[te++] = re;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	int nn;
+	int[] aa;
+	int[] ab;
+	int[] ba;
+	int[] bb;
+	int[] uu;
+	int[] tt;
+}
